@@ -47,5 +47,6 @@ detect_project_type() {
   fi
 }
 
+
 # Call the function with the repository URL as an argument
 detect_project_type "$1"
