@@ -5,13 +5,33 @@ detect_project_type() {
   local repo_url=$1
 
   if [ -f "package.json" ]; then
-    echo "Node.js project detected. Repository URL: $repo_url"
+    if grep -q '"next"' package.json; then
+      echo "Next.js project detected. Repository URL: $repo_url"
+    elif grep -q '"react"' package.json; then
+      echo "React project detected. Repository URL: $repo_url"
+    else
+      echo "Node.js project detected. Repository URL: $repo_url"
+    fi
   elif [ -f "pom.xml" ]; then
-    echo "Java Maven project detected. Repository URL: $repo_url"
+    if grep -q '<artifactId>spring-boot-starter' pom.xml; then
+      echo "Spring Boot project detected. Repository URL: $repo_url"
+    else
+      echo "Java Maven project detected. Repository URL: $repo_url"
+    fi
   elif [ -f "build.gradle" ]; then
-    echo "Java Gradle project detected. Repository URL: $repo_url"
+    if grep -q 'id "org.springframework.boot"' build.gradle; then
+      echo "Spring Boot project detected. Repository URL: $repo_url"
+    else
+      echo "Java Gradle project detected. Repository URL: $repo_url"
+    fi
   elif [ -f "requirements.txt" ]; then
-    echo "Python project detected. Repository URL: $repo_url"
+    if grep -q 'flask' requirements.txt; then
+      echo "Flask project detected. Repository URL: $repo_url"
+    elif grep -q 'django' requirements.txt; then
+      echo "Django project detected. Repository URL: $repo_url"
+    else
+      echo "Python project detected. Repository URL: $repo_url"
+    fi
   elif [ -f "Gemfile" ]; then
     echo "Ruby project detected. Repository URL: $repo_url"
   elif [ -f "composer.json" ]; then
