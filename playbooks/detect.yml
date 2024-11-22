@@ -1,0 +1,13 @@
+---
+- name: Detect Project Type
+  hosts: kube_servers
+  become: yes
+  tasks:
+    - name: Copy shell script to Kubernetes server
+      copy:
+        src: ../scripts/detect_project_type.sh
+        dest: /root/istad/detect_project_type.sh
+        mode: '0755'
+
+    - name: Execute the project type detection script
+      command: "bash /root/istad/detect_project_type.sh {{ repo_url }}"
