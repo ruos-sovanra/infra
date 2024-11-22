@@ -11,3 +11,8 @@
 
     - name: Execute the project type detection script
       command: "bash /root/istad/detect_project_type.sh {{ repo_url }}"
+      register: detect_output
+
+    - name: Print detected project type
+      debug:
+        msg: "{{ detect_output.stdout }}"
