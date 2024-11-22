@@ -1,0 +1,5 @@
+ansible-playbook -i inventory/inventory.ini playbooks/gitlab-automate.yml 
+-e "APP_NAME=nginx-deploy" 
+-e "IMAGE=nginx:latest" 
+-e "NAMESPACE=default" 
+-e "FILE_Path=goodluck"

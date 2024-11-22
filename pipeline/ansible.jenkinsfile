@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+    environment {
+        // let variable for file path
+        ANSIBLE_HOME = '/usr/bin/ansible'
+        INVENTORY_FILE = 'inventory/inventory.ini'
+        PLAYBOOK_FILE = 'playbooks/gitlab-automate.yml '
+
+        // key and value for use to deploy to k8s
+        APP_NAME= 'cloudinator-app'
+        IMAGE="nginx:latest"
+        NAMESPACE="cloudinator" 
+        FILE_Path="badluck"
+    }
+    // parameters {
+    //     string(name: 'APP_NAME', defaultValue: 'my-app', description: 'Application Name')
+    //     string(name: 'IMAGE', defaultValue: 'nginx:latest', description: 'Docker Image')
+    //     string(name: 'NAMESPACE', defaultValue: 'default', description: 'Kubernetes Namespace')
+    // }
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git branch: 'main', url: 'https://gitlab.com/springops/ansible-infra.git'
+            }
+        }
+        stage('check file'){
+            steps{
+                sh '''
+                pwd 
+                ls -lrt
+                '''
+            }
+        }
+        stage('Check SHH to server  k8s'){
+            steps{
+                sh"""
+                sudo ansible -i ${INVENTORY_FILE} all -m ping 
+                """                
+            }
+        }
+        stage('Run Ansible Playbook to Server Master'){
+            steps{
+                script{
+                    sh """
+                    sudo ansible-playbook -i ${INVENTORY_FILE} ${PLAYBOOK_FILE} \
+                    -e "APP_NAME=${APP_NAME}" \
+                    -e "IMAGE=${IMAGE}" \
+                    -e "NAMESPACE=${NAMESPACE}" \
+                    -e "FILE_Path=${FILE_Path}"
+                    """
+                }
+            }
+        }
+        // stage('Run Ansible Playbook') {
+        //     steps {
+        //         script {
+        //             echo "Deploying ${params.APP_NAME} with image ${params.IMAGE} to namespace ${params.NAMESPACE}"
+        //             sh """
+        //                 ${ANSIBLE_HOME} -i ${INVENTORY_FILE} ${PLAYBOOK_FILE} \
+        //                 --extra-vars "app_name=${params.APP_NAME} image=${params.IMAGE} namespace=${params.NAMESPACE}"
+        //             """
+        //         }
+        //     }
+        // }
+    }
+}
+

@@ -1,0 +1,15 @@
+---
+- name: Deploy Application to Kubernetes Server
+  hosts: kube_servers
+  become: yes
+  # vars_files:
+  #   - ../vars/app_vars.yml
+  tasks:
+    - name: Copy shell script to Kubernetes server
+      copy:
+        src: ../scripts/shell-script.sh
+        dest: /root/istad/shell-script.sh
+        mode: '0755'
+
+    - name: Execute the shell script with dynamic variables
+      command: "bash /root/istad/shell-script.sh {{ app_name }} {{ app_version }}"
